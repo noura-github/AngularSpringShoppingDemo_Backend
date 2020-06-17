@@ -64,16 +64,14 @@ public class AppSecurityConfig extends WebSecurityConfigurerAdapter {
 	
 
 	 
-	@Override //here to secure the access to the app
+	@Override
 	protected void configure(HttpSecurity http) throws Exception {
-		
 		
 		http.cors().configurationSource(request -> new CorsConfiguration()
 				   .applyPermitDefaultValues());
 		
 		http.csrf().disable()
 		.authorizeRequests()
-		  .antMatchers("/cart/**", "/wishlist/**", "/customer/deleteCustomerById/**").hasAnyRole(AppUserRole.USER.name())
 		  .antMatchers("/login", "/logout", "/customer/**", "/products/**", "/laptops/**", "/printers/**").permitAll()
 		  .anyRequest().authenticated()
 		 .and().httpBasic()

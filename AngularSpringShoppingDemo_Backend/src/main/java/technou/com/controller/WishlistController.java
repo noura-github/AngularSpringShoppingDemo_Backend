@@ -95,14 +95,13 @@ public class WishlistController {
 	}
 	
 	
-	@PostMapping(path = "/deleteWishProduct/{customerId}/{productId}")
+	@PostMapping(path = "/deleteWishProduct/{customerId}") 
 	@PreAuthorize("hasAnyRole('ROLE_USER')")
 	public ResponseEntity<Collection<WishProduct>> deleteCartProduct(
 				@PathVariable(value="customerId") int customerId,
-				@PathVariable(value="productId") int productId
+				@Valid @RequestBody WishProduct wishProduct
 				) throws Exception {
 
-			System.out.println("## deleteWishProduct ##");
 				
 			Optional<Wishlist> wishlistopt = wishlistRepository.findByCustomerId(customerId);
 			
@@ -110,7 +109,7 @@ public class WishlistController {
 			
 			Wishlist wishlist = wishlistopt.get();
 
-			Optional<WishProduct> wishPrOpt = wishProductRepository.findByProductId(productId);
+			Optional<WishProduct> wishPrOpt = wishProductRepository.findByProductId(wishProduct.getProductId());
 
 			if (wishPrOpt.isPresent()) {
 								
