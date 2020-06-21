@@ -148,13 +148,13 @@ public class CartController {
 			return ResponseEntity.ok().body(cart.getProductsInCart());
 	}
 	
-	@PostMapping(path = "/deleteCartProduct/{customerId}/{cartProductId}")
+	@PostMapping(path = "/deleteCartProduct/{customerId}")
 	@PreAuthorize("hasAnyRole('ROLE_USER')")
 	public ResponseEntity<Collection<CartProduct>> deleteCartProduct(
 				@PathVariable(value="customerId") int customerId,
-				@PathVariable(value="cartProductId") int cartProductId
+				@Valid @RequestBody CartProduct cartProduct
 				) throws Exception {
-
+		
 			
 			Optional<Cart> cartopt = cartRepository.findByCustomerId(customerId);
 			
@@ -162,11 +162,13 @@ public class CartController {
 
 			Cart cart = cartopt.get();
 
-			Optional<CartProduct> cPdbOpt = cartProductRepository.findById(cartProductId);
+			Optional<CartProduct> cPdbOpt = cartProductRepository.findByProductId(cartProduct.getProductId());
 			
 			if (cPdbOpt.isPresent()) {
-								
+
 				CartProduct cPdb = cPdbOpt.get();
+				
+				cPdb.setQty(0);
 				
 				cart.setProductsInCart(
 						cart.getProductsInCart().stream()
@@ -174,7 +176,7 @@ public class CartController {
 						.collect(Collectors.toCollection(ArrayList::new))
 						);
 				
-				cartProductRepository.deleteById(cartProductId);
+				cartProductRepository.deleteById(cartProduct.getCartProductId());
 
 				cartRepository.saveAndFlush(cart);				
 			} 		
